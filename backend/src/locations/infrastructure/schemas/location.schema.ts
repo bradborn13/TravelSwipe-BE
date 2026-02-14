@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
+export type LocationDocument = HydratedDocument<Location>;
 
 // 1. Define sub-schema for Categories
 @Schema({ _id: false })
 class Category {
   @Prop()
-  id!: number;
-
+  id!: string;
   @Prop()
   name!: string;
   @Prop()
@@ -42,15 +42,51 @@ class RelatedPlaces {
   @Prop()
   fsq_place_id!: string;
 
-    @Prop()
+  @Prop()
   name!: string;
 
   @Prop({ type: [Category] })
   categories!: Category[];
 }
+class SocialMedia {
+  @Prop()
+  facebookId!: string;
+
+  @Prop()
+  instagram!: string;
+
+  @Prop()
+  twitter!: string;
+}
+
+class ImageURL {
+  @Prop()
+  originalHeight!: number;
+
+  @Prop()
+  originalWidth!: number;
+
+  @Prop()
+  thumbnail!: string;
+
+  @Prop()
+  title!: string;
+
+  @Prop()
+  source!: string;
+
+  @Prop()
+  link!: string;
+
+  @Prop()
+  position!: number;
+
+  @Prop()
+  imgSource!: string;
+}
 
 @Schema({ timestamps: true })
-export class Location extends Document {
+export class Location {
   @Prop({ required: true })
   name!: string;
 
@@ -61,6 +97,9 @@ export class Location extends Document {
   city!: string;
 
   @Prop()
+  imagesURL!: ImageURL[];
+
+  @Prop()
   latitude!: number;
 
   @Prop()
@@ -68,6 +107,21 @@ export class Location extends Document {
 
   @Prop({ type: [Category] })
   categories!: Category[];
+
+  @Prop()
+  dateCreated!: Date;
+
+  @Prop()
+  dateRefreshed!: Date;
+
+  @Prop()
+  link!: string;
+
+  @Prop()
+  address!: string;
+
+  @Prop()
+  tel!: string;
 
   @Prop({ type: LocationDetails })
   details!: LocationDetails;
@@ -80,6 +134,8 @@ export class Location extends Document {
 
   @Prop({ type: [RelatedPlaces] })
   relatedPlaces?: RelatedPlaces[];
-}
 
+  @Prop({ type: SocialMedia })
+  socialMedia?: SocialMedia;
+}
 export const LocationSchema = SchemaFactory.createForClass(Location);

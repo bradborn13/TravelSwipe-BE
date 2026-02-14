@@ -22,13 +22,15 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: secretpassword
     ports:
       - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     env_file:
-      - ./backend/.env  # <- points to the child folder .env
+      - ./backend/.env # <- points to the child folder .env
     ports:
       - "5001:5001"
     volumes:
@@ -41,4 +43,4 @@ services:
     restart: always
 
 volumes:
-  mongo_data: {}
+  mongo_data:
