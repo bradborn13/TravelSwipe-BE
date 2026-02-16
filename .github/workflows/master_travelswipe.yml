@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy container app to Azure Web App - TravelSwipe
+name: Build and deploy container app - TravelSwipe
 
 on:
   push:
@@ -13,10 +13,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -27,6 +28,24 @@ jobs:
           registry: mcr.microsoft.com/
           username: ${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_1526DF366B09418D9DFD3CAC8647409D }}
           password: ${{ secrets.AZUREAPPSERVICE_CONTAINERPASSWORD_E50EF11B10B749858606A5F52F8F0B77 }}
+
+      # --- BACKEND BUILD ---
+      - name: Build and push Backend
+        uses: docker/build-push-action@v3
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: mcr.microsoft.com/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_1526DF366B09418D9DFD3CAC8647409D }}/appsvc/backend:${{ github.sha }}
+
+      # --- FRONTEND BUILD ---
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v3
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: mcr.microsoft.com/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_1526DF366B09418D9DFD3CAC8647409D }}/appsvc/frontend:${{ github.sha }}
 
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
@@ -43,9 +62,8 @@ jobs:
       contents: read #This is required for actions/checkout
 
     needs: build
-    
+
     steps:
-      
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -57,7 +75,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'TravelSwipe'
-          slot-name: 'Production'
-          images: 'mcr.microsoft.com/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_1526DF366B09418D9DFD3CAC8647409D }}/appsvc/staticsite:${{ github.sha }}'
-          
+          app-name: "TravelSwipe"
+          slot-name: "Production"
+          images: "mcr.microsoft.com/${{ secrets.AZUREAPPSERVICE_CONTAINERUSERNAME_1526DF366B09418D9DFD3CAC8647409D }}/appsvc/staticsite:${{ github.sha }}"
