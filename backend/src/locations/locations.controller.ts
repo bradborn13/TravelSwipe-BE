@@ -2,12 +2,12 @@ import { Controller, Get } from '@nestjs/common';
 import { LocationsService } from './locations.service';
 import { ApiTags } from '@nestjs/swagger';
 
-@ApiTags('locations')
-@Controller('locations')
+@ApiTags('location')
+@Controller('location')
 export class LocationsController {
   constructor(private readonly locationsService: LocationsService) {}
 
-  @Get('locations')
+  @Get('getAll')
   async findLocations() {
     return await this.locationsService.getLocationSuggestions();
   }

@@ -2,6 +2,9 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        # This passes the variable to your Dockerfile "ARG" during 'yarn build'
+        - NEXT_PUBLIC_API_URL=http://localhost:5001
     ports:
       - '3000:3000'
     volumes:
@@ -9,6 +12,7 @@ services:
       - /app/node_modules
       - /app/.next
     environment:
+      # These are for when the container is actually running
       NODE_ENV: development
       NEXT_PUBLIC_API_URL: http://localhost:5001
       HOSTNAME: 0.0.0.0

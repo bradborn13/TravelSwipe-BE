@@ -30,12 +30,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     env_file:
-      - ./backend/.env # <- points to the child folder .env
+      - ./backend/.env
     ports:
       - "5001:5001"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     depends_on:
       - mongodb
     environment:

@@ -12,14 +12,6 @@ import { green } from '@mui/material/colors'
 export default function LocationCard() {
   const query = useAppSelector((state) => state.base.search)
   const [activities, setActivities] = useState({ data: [], loading: false })
-  const buttonSx = {
-    ...(activities.loading && {
-      bgcolor: green[500],
-      '&:hover': {
-        bgcolor: green[700],
-      },
-    }),
-  }
   function ImageCarousel(images) {
     return (
       <Carousel data-bs-theme="dark" interval={null}>
@@ -44,15 +36,13 @@ export default function LocationCard() {
   }
   const handleUpdateActivityImages = useCallback(async () => {
     setActivities((prev) => ({ ...prev, loading: true }))
-    await new Promise((resolve) => setTimeout(resolve, 15000))
-
     try {
       await axios
-        .get(`http://localhost:5001/activities/update/images`, {
+        .get(`${process.env.NEXT_PUBLIC_API_URL}/activities/update/images`, {
           params: { city: query },
         })
         .then(async () => {
-          const response = await axios.get(`http://localhost:5001/activities/search`, {
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/activities/search`, {
             params: { city: query },
           })
           setActivities((prev) => ({ ...prev, data: response.data }))
@@ -63,17 +53,14 @@ export default function LocationCard() {
       setActivities((prev) => ({ ...prev, loading: false }))
     }
   }, [query])
-
   useEffect(() => {
     async function fetchLocationEvents() {
       setActivities((prev) => ({ ...prev, loading: true }))
       try {
-        const response = await axios.get(`http://localhost:5001/activities/search`, {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/activities/search`, {
           params: { city: query },
         })
-
         const data = Array.isArray(response.data) ? response.data : []
-
         setActivities((prev) => ({ ...prev, data: data }))
       } catch (err) {
         console.error('Error fetching events:', err)
@@ -95,7 +82,14 @@ export default function LocationCard() {
         <Box sx={{ m: 1, position: 'relative' }}>
           <Button
             variant="contained"
-            sx={buttonSx}
+            sx={
+              activities.loading && {
+                bgcolor: green[500],
+                '&:hover': {
+                  bgcolor: green[700],
+                },
+              }
+            }
             disabled={activities.loading}
             onClick={async () => await handleUpdateActivityImages()}
           >

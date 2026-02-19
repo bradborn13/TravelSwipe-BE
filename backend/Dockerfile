@@ -2,14 +2,15 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Install dependencies first (for better caching)
-COPY package.json yarn.lock* ./
-RUN yarn install
+# Install deps
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-# Copy the rest of the code
+# Copy source and build
 COPY . .
 RUN yarn build
+
 EXPOSE 5001
 
-# Start in development mode with watch enabled
-CMD ["yarn", "start:prod"]
+# Run compiled output
+CMD ["node", "dist/main.js"]

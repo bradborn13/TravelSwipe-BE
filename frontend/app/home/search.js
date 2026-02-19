@@ -10,8 +10,8 @@ export default function Search() {
   const dispatch = useAppDispatch()
   const [inputValue, setInputValue] = useState('')
   const [location, setLocation] = useState('')
-
   const [locationSuggestions, setLocationSuggestions] = useState([])
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       setLocation(inputValue)
@@ -20,10 +20,11 @@ export default function Search() {
 
     return () => clearTimeout(timeout)
   }, [dispatch, inputValue, location])
+
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/locations/locations')
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/location/getAll`)
         setLocationSuggestions(response.data)
       } catch (error) {
         console.error('Error fetching location suggestions:', error)
