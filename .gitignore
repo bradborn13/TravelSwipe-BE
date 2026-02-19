@@ -2,17 +2,9 @@
 node_modules/
 **/node_modules/
 
-
-# Next.js build output
-.next/
-**/.next/
-
 # NestJS build output
 dist/
 **/dist/
-
-# Docker persistent data
-postgres_data/
 
 # Environment variables (Safety first!)
 .env
