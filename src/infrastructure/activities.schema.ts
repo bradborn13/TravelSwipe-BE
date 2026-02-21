@@ -90,6 +90,9 @@ export class Activities {
   @Prop({ required: true })
   name!: string;
 
+  @Prop()
+  suburb!: string;
+
   @Prop({ unique: true })
   fsq_id!: string;
 
@@ -138,4 +141,5 @@ export class Activities {
   @Prop({ type: SocialMedia })
   socialMedia?: SocialMedia;
 }
+
 export const ActivitiesSchema = SchemaFactory.createForClass(Activities);

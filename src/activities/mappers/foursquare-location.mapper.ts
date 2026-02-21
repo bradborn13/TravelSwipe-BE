@@ -1,5 +1,5 @@
 import { FoursquareLocationDto } from '../dto/foursquare-location.dto';
-import { Activities } from '../infrastructure/activities.schema';
+import { Activities } from '../../infrastructure/activities.schema';
 
 export function mapFoursquareLocation(
   item: FoursquareLocationDto,
@@ -8,6 +8,7 @@ export function mapFoursquareLocation(
   return {
     fsq_id: item.fsq_place_id,
     city,
+    suburb: '',
     name: item.name,
     latitude: item.latitude,
     longitude: item.longitude,

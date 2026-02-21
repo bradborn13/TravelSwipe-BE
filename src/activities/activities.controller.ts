@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Post } from '@nestjs/common';
 import { ActivityService } from './activities.service';
 import { FindActivitiesDto } from './dto/input/FindActivities';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
@@ -15,8 +15,13 @@ export class ActivitiesController {
     return await this.activityService.getActivities(query.city);
   }
 
-  @Get('update/images')
-  async findPhotos(@Query('city') city: string) {
-    return await this.activityService.scrapePhotoForLocation(city);
+  @Post('update/images')
+  async findPhotos(@Query() query: FindActivitiesDto) {
+    console.log(`Received request to update images for city: ${query.city}`);
+    return await this.activityService.scrapePhotoForLocation(query.city);
+  }
+  @Get('find/country')
+  async updateCountry() {
+    return await this.activityService.findCountryForActivities();
   }
 }

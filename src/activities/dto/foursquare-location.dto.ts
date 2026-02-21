@@ -11,6 +11,7 @@ export interface FoursquareLocationDto {
   longitude: number;
   categories?: FoursquareCategoryDto[];
   distance?: number;
+  suburb?: string;
   location?: {
     address?: string;
     locality?: string;

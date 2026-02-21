@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { Activities } from 'src/activities/infrastructure/activities.schema';
+import { Activities } from 'src/infrastructure/activities.schema';
 
 export class ActivitiesDto extends Activities {
   @Expose()

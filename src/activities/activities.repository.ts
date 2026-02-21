@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import {
   Activities,
   ActivitiesDocument,
-} from './infrastructure/activities.schema';
+} from '../infrastructure/activities.schema';
 
 @Injectable()
 export class ActivitiesRepository {
@@ -62,5 +62,31 @@ export class ActivitiesRepository {
         ],
       })
       .exec();
+  }
+  async findActivitiesWithoutCountries() {
+    return await this.model.aggregate([
+      {
+        $match: {
+          latitude: { $ne: null },
+          city: { $exists: true },
+          country: { $exists: false },
+        },
+      },
+      {
+        $group: {
+          _id: '$city',
+          latitude: { $first: '$latitude' },
+          longitude: { $first: '$longitude' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          city: '$_id',
+          latitude: 1,
+          longitude: 1,
+        },
+      },
+    ]);
   }
 }

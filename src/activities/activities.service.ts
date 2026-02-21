@@ -5,11 +5,20 @@ import { mapFoursquareLocation } from './mappers/foursquare-location.mapper';
 import { FoursquareLocationDto } from './dto/foursquare-location.dto';
 import { getJson } from 'serpapi';
 import { ActivitiesRepository } from './activities.repository';
-import { Activities } from './infrastructure/activities.schema';
+import { Activities } from '../infrastructure/activities.schema';
+import { CityRepository } from 'src/city/city.repository';
+import { CountryRepository } from 'src/country/country.repository';
+import { City } from 'src/infrastructure/city.schema';
+import { Country } from 'src/infrastructure/country.schema';
+import slugify from 'slugify';
 
 @Injectable()
 export class ActivityService {
-  constructor(private readonly activitiesRepo: ActivitiesRepository) {}
+  constructor(
+    private readonly activitiesRepo: ActivitiesRepository,
+    private readonly countryRepo: CountryRepository,
+    private readonly cityRepo: CityRepository,
+  ) {}
 
   async scrapePhotoForLocation(city: string) {
     const amountOfPhotos = 6;
@@ -42,6 +51,60 @@ export class ActivityService {
     );
   }
 
+  async findCountryForActivities() {
+    const citiesWOCountries =
+      await this.activitiesRepo.findActivitiesWithoutCountries();
+    const countries: Country[] = [];
+    const cities: City[] = [];
+    await Promise.all(
+      citiesWOCountries.map(async (city: Activities) => {
+        try {
+          const response: any = await axios({
+            method: 'GET',
+            url: `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${city.latitude}&lon=${city.longitude}`,
+            params: {},
+            headers: {
+              'User-Agent': 'TravelSwipe-App',
+            },
+          });
+          const countryFormated = slugify(response.data?.address.country, {
+            lower: true,
+            strict: true,
+            trim: true,
+          });
+          if (!countries.some((x) => x.nameClean === countryFormated)) {
+            countries.push({
+              countryCode: response.data?.address?.country_code ?? '',
+              name: [response.data?.address.country],
+              nameClean: countryFormated,
+            });
+          }
+
+          if (response?.data?.address?.city) {
+            const cityFormated = slugify(response?.data?.address?.city, {
+              lower: true,
+              strict: true,
+              trim: true,
+            });
+            if (!cities.some((x) => x.nameClean === cityFormated)) {
+              cities.push({
+                country: countryFormated,
+                municipality: response.data.address.municipality,
+                name: [response.data.address.city, city.city],
+                nameClean: cityFormated,
+                postcode: response.data.address.postcode,
+                state: response?.data?.address?.state?.split(',') ?? [],
+              });
+            }
+          }
+        } catch (err) {
+          console.log(err, 'error');
+        }
+      }),
+    );
+    await this.cityRepo.saveCities(cities);
+    await this.countryRepo.saveCountries(countries);
+  }
   async scrapePhotosForActivity(
     activity: string,
     location: string,

@@ -2,6 +2,7 @@
   "compilerOptions": {
     /* Module system */
     "module": "commonjs",
+    "noImplicitAny": false,
     "declaration": true,
     "moduleResolution": "node",
     "strictPropertyInitialization": false,
