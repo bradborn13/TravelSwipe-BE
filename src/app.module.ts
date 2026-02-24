@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CityModule } from './city/city.module';
 import { CountryModule } from './country/country.module';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -17,6 +18,7 @@ import { CountryModule } from './country/country.module';
     ActivitiesModule,
     CityModule,
     CountryModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

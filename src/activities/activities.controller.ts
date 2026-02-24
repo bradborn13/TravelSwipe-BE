@@ -11,7 +11,7 @@ export class ActivitiesController {
 
   @ApiOkResponse({ type: [ActivitiesDto] })
   @Get('search')
-  async findActivities(@Query() query: FindActivitiesDto) {
+  async getActivities(@Query() query: FindActivitiesDto) {
     return await this.activityService.getActivities(query.city);
   }
 

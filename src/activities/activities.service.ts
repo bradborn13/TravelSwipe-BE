@@ -11,7 +11,8 @@ import { CountryRepository } from 'src/country/country.repository';
 import { City } from 'src/infrastructure/city.schema';
 import { Country } from 'src/infrastructure/country.schema';
 import slugify from 'slugify';
-
+import redis from 'src/redis/redis';
+const THREE_DAYS_IN_SECONDS = 3 * 24 * 60 * 60;
 @Injectable()
 export class ActivityService {
   constructor(
@@ -139,10 +140,19 @@ export class ActivityService {
   }
 
   async getActivities(city: string) {
+    const cacheKey = `api:activities:${city.toLowerCase()}`;
+    const cachedData = await redis.get(cacheKey);
+    if (cachedData) return JSON.parse(cachedData);
     const locationsByCity = await this.activitiesRepo.findActivity({
       city: city,
     });
     if (locationsByCity.length > 0) {
+      redis.set(
+        cacheKey,
+        JSON.stringify(locationsByCity),
+        'EX',
+        THREE_DAYS_IN_SECONDS,
+      );
       return locationsByCity;
     } else {
       return await this.SearchAndStoreActivities(city);

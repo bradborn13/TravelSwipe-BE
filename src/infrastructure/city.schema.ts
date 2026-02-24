@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 export type CityDocument = HydratedDocument<City>;
 
-@Schema({ _id: false })
+@Schema({ timestamps: true })
 export class City {
   @Prop({ type: [String] })
   name: string[];
