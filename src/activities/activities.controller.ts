@@ -17,7 +17,6 @@ export class ActivitiesController {
 
   @Post('update/images')
   async findPhotos(@Query() query: FindActivitiesDto) {
-    console.log(`Received request to update images for city: ${query.city}`);
     return await this.activityService.scrapePhotoForLocation(query.city);
   }
   @Get('find/country')

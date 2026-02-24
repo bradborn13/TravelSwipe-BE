@@ -12,7 +12,7 @@ import { City } from 'src/infrastructure/city.schema';
 import { Country } from 'src/infrastructure/country.schema';
 import slugify from 'slugify';
 import redis from 'src/redis/redis';
-const THREE_DAYS_IN_SECONDS = 3 * 24 * 60 * 60;
+import { THREE_DAYS_IN_SECONDS } from 'src/utility/redis';
 @Injectable()
 export class ActivityService {
   constructor(
